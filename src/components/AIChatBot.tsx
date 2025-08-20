@@ -47,6 +47,7 @@ const STORE_CONTEXT = `
 بوص ذا سنت
 سلفر سنت
 اديدس بلو
+`;
 
 // استخراج رقم الواتساب من السياق
 const WHATSAPP_NUMBER = STORE_CONTEXT.match(/رقم الواتساب: (\d+)/)?.[1];
