@@ -246,7 +246,7 @@ export default function AIChatBot() {
                                      rounded-lg transition-all border border-green-500/50"
                         >
                           <MessageSquare className="w-3 h-3"/>
-                          أكمل عبر الواتساب
+                          كلم البائع عبر الواتساب
                         </a>
                       )}
                     </div>
