@@ -14,10 +14,9 @@ interface Message {أ
 // =====================
 // إعدادات Gemini API
 // =====================
-const GEMINI_API_KEY = "AIzaSyColC5o7giIVKlqzReWX5w4r7ngpuY9cG8"; // المفتاح الذي أدخلته
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
-const GEMINI_MODEL = "gemini-1.5-flash-latest";
-
+const GEMINI_API_KEY = "AIzaSyAeMLURr9rdBxyc3ny2fE5p3RebkJDUCds"; // المفتاح الذي أدخلته
+const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 const RenderMessageWithLinks = ({ text }: { text: string }) => {
     const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
