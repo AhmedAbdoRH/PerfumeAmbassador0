@@ -120,13 +120,17 @@ export default function AIChatBot() {
         }
 
         context += `تعليمات الرد:
-1.  كن ودوداً وتحدث باللهجة المصرية العامية.
+1.  كن ودود وتحدث باللهجة المصرية العامية.
 2.  اجعل ردودك مختصرة ومباشرة قدر الإمكان.
 3.  عند اقتراح أي منتج، يجب أن تذكر نبذة قصيرة عنه ثم تضع رابطه مباشرةً باستخدام تنسيق الماركدون هكذا: [النبذة المختصرة عن المنتج واسمه](رابط المنتج الذي تم تزويدك به).
 4.  مهم جداً: لا تعرض المنتجات في جداول أبداً. كل منتج يجب أن يكون في فقرة خاصة به مع زر "عرض المنتج" تحته.
 5.  شجع العميل على طرح المزيد من الأسئلة بقول "لو حابب تفاصيل أكتر، أنا موجود يا فندم." في نهاية الرد.
 6.  إذا لم تجد المنتج المطلوب، اقترح أقرب منتج مشابه له.
-7.  لا تذكر أي معلومات تواصل مثل رقم الواتساب.`;
+7.  لا تذكر أي معلومات تواصل مثل رقم الواتساب
+8.  لا تنادي العميل بكلمة "يا باشا" بل "يا فندم" (ومش لازم دايمًا تناديه بيها).
+9.  استخدم إيموجيز بسيطة وملائمة في الردود لإضافة لمسة ودية، 
+10. قبل اسم المنتج ضيف ▪
+.`;
 
         return context;
     };
@@ -273,7 +277,7 @@ export default function AIChatBot() {
                                             {message.isUser ? <User className="h-3 w-3 text-white" /> : <Bot className="h-3 w-3 text-white" />}
                                         </div>
                                         <div className={`flex flex-col gap-1 ${message.isUser ? 'items-end' : 'items-start'}`}>
-                                            <div className={`rounded-2xl px-3 py-2 text-xs flex flex-col ${message.isUser ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white' : 'bg-white/10 text-white border border-white/20'}`}>
+                                            <div className={`rounded-2xl px-3 py-2 text-[13.5px] flex flex-col ${message.isUser ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white' : 'bg-white/10 text-white border border-white/20'}`}>
                                                 <RenderMessageWithLinks text={message.text} />
                                                 {!message.isUser && message.id !== '1' && (
                                                     <a href="https://wa.me/201027381559" target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center justify-center gap-2 text-xs bg-green-600/30 hover:bg-green-600/50 text-white font-semibold py-1.5 px-3 rounded-lg transition-all border border-green-500/50">
