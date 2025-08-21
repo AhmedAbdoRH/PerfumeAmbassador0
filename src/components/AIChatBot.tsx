@@ -182,7 +182,7 @@ export default function AIChatBot() {
             // استخلاص النص من استجابة Gemini
             const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-            return textResponse?.trim() || 'عذراً، لم أتمكن من فهم سؤالك.';
+            return textResponse?.trim() || 'معلش، مافهمتش سؤالك n/ممكن توضحلي محتاج ايه بالظبط.';
 
         } catch (error) {
             console.error('Error calling Gemini API:', error);
