@@ -129,7 +129,7 @@ export default function AIChatBot() {
 8.  لا تنادي العميل بكلمة "يا باشا" بل "يا فندم" (ومش لازم دايمًا تناديه بيها).
 9.  استخدم إيموجيز بسيطة وملائمة في الردود لإضافة لمسة ودية، 
 10. قبل اسم المنتج ضيف ▫️
-11. بلاش تحط كلمة "عرض  المنتج" يكفي زر عرض المنتج
+11. بلاش تحط كلمة "عرض  المنتج" يكفي زر عرض المنتج سيب النبذه فقط 
 .`;
 
         return context;
@@ -277,7 +277,7 @@ export default function AIChatBot() {
                                             {message.isUser ? <User className="h-3 w-3 text-white" /> : <Bot className="h-3 w-3 text-white" />}
                                         </div>
                                         <div className={`flex flex-col gap-1 ${message.isUser ? 'items-end' : 'items-start'}`}>
-                                            <div className={`rounded-2xl px-3 py-2 text-[13.5px] flex flex-col ${message.isUser ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white' : 'bg-white/10 text-white border border-white/20'}`}>
+                                            <div className={`rounded-2xl px-3 py-2 text-[13.6px] flex flex-col ${message.isUser ? 'bg-gradient-to-r from-green-600 to-emerald-700 text-white' : 'bg-white/10 text-white border border-white/20'}`}>
                                                 <RenderMessageWithLinks text={message.text} />
                                                 {!message.isUser && message.id !== '1' && (
                                                     <a href="https://wa.me/201027381559" target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center justify-center gap-2 text-xs bg-green-600/30 hover:bg-green-600/50 text-white font-semibold py-1.5 px-3 rounded-lg transition-all border border-green-500/50">
