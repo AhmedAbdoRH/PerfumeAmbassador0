@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase'; // تأكد من أن مسار supabase صحيح
 import type { Service, Category, StoreSettings } from '../types/database'; // تأكد من أن مسار الأنواع صحيح
 
-interface Message {
+interface Message {أ
     id: string;
     text: string;
     isUser: boolean;
@@ -57,7 +57,7 @@ export default function AIChatBot() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: 'أهلاً بك في سفير العطور 🌹 كيف أقدر أساعدك؟',
+            text: 'أهلاً بيك في سفير العطور 🌹\nازاي أقدر أساعدك؟',
             isUser: false,
             timestamp: new Date()
         }
