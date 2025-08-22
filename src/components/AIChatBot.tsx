@@ -221,7 +221,7 @@ export default function AIChatBot() {
                 const botMessage: Message = { id: (Date.now() + 1).toString(), text: aiResponse, isUser: false, timestamp: new Date() };
                 setMessages(prev => [...prev, botMessage]);
                 setIsLoading(false);
-            }, 300);
+            }, 400);
         } catch (error) {
             const errorMessage: Message = { id: (Date.now() + 1).toString(), text: '⚠️ عذراً، حدث خطأ.', isUser: false, timestamp: new Date() };
             setMessages(prev => [...prev, errorMessage]);
