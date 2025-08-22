@@ -221,7 +221,7 @@ export default function AIChatBot() {
                 const botMessage: Message = { id: (Date.now() + 1).toString(), text: aiResponse, isUser: false, timestamp: new Date() };
                 setMessages(prev => [...prev, botMessage]);
                 setIsLoading(false);
-            }, 1000);
+            }, 500);
         } catch (error) {
             const errorMessage: Message = { id: (Date.now() + 1).toString(), text: '⚠️ عذراً، حدث خطأ.', isUser: false, timestamp: new Date() };
             setMessages(prev => [...prev, errorMessage]);
@@ -298,11 +298,12 @@ export default function AIChatBot() {
                                     <div className="flex items-start gap-2">
                                         <div className="w-6 h-6 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center"><Bot className="h-3 w-3 text-white" /></div>
                                         <div className="bg-white/10 rounded-2xl px-3 py-2 border border-white/20">
-                                            <div className="flex space-x-1">
-                                                <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce"></div>
-                                                <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                                <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                                            </div>
+                                            <div className="flex items-center">
+                                            <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce mx-1"></div>
+                                           <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce mx-1" style={{ animationDelay: '0.2s' }}></div>
+                                           <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce mx-1" style={{ animationDelay: '0.4s' }}></div>
+                                          </div>
+
                                         </div>
                                     </div>
                                 </motion.div>
