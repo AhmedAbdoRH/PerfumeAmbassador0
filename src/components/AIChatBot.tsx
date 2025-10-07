@@ -14,7 +14,7 @@ interface Message {أ
 // =====================
 // إعدادات Gemini API
 // =====================
-const GEMINI_API_KEY = "AIzaSyAeMLURr9rdBxyc3ny2fE5p3RebkJDUCds"; // المفتاح الذي أدخلته
+const GEMINI_API_KEY = "AIzaSyAY7XTQpSR4nws-xRIhABZn3f3kYdGIVDs"; // المفتاح الذي أدخلته
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 const GEMINI_MODEL = "gemini-2.5-flash";
 
