@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from './lib/supabase';
+import { CartProvider } from './contexts/CartContext';
+import Cart from './components/Cart';
 import Header from './components/Header';
 import BannerSlider from './components/BannerSlider';
 import Services from './components/Services';
@@ -56,7 +58,7 @@ function App() {
   const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [banners, setBanners] = useState<Banner[]>([]);
-  const [mainContentLoaded, setMainContentLoaded] = useState(false); // New state
+  const [mainContentLoaded, setMainContentLoaded] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -176,57 +178,59 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Helmet>
-        <title>{storeSettings?.meta_title || storeSettings?.store_name || 'متجر إلكتروني'}</title>
-        <meta name="description" content={storeSettings?.meta_description || storeSettings?.store_description || 'أفضل المنتجات والعروض'} />
-        {storeSettings?.keywords && storeSettings.keywords.length > 0 && (
-          <meta name="keywords" content={storeSettings.keywords.join(', ')} />
-        )}
-        {storeSettings?.favicon_url && (
-          <link rel="icon" href={storeSettings.favicon_url} />
-        )}
-        {storeSettings?.og_image_url && (
-          <meta property="og:image" content={storeSettings.og_image_url} />
-        )}
-        <meta property="og:title" content={storeSettings?.meta_title || storeSettings?.store_name || ''} />
-        <meta property="og:description" content={storeSettings?.meta_description || storeSettings?.store_description || ''} />
-        <meta property="og:type" content="website" />
-      </Helmet>
-      <Router>
-        <Routes>
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={
-            <PrivateRoute>
-              <AdminDashboard onSettingsUpdate={fetchStoreSettings} />
-            </PrivateRoute>
-          } />
+      <CartProvider>
+        <Helmet>
+          <title>{storeSettings?.meta_title || storeSettings?.store_name || 'متجر إلكتروني'}</title>
+          <meta name="description" content={storeSettings?.meta_description || storeSettings?.store_description || 'أفضل المنتجات والعروض'} />
+          {storeSettings?.keywords && storeSettings.keywords.length > 0 && (
+            <meta name="keywords" content={storeSettings.keywords.join(', ')} />
+          )}
+          {storeSettings?.favicon_url && (
+            <link rel="icon" href={storeSettings.favicon_url} />
+          )}
+          {storeSettings?.og_image_url && (
+            <meta property="og:image" content={storeSettings.og_image_url} />
+          )}
+          <meta property="og:title" content={storeSettings?.meta_title || storeSettings?.store_name || ''} />
+          <meta property="og:description" content={storeSettings?.meta_description || storeSettings?.store_description || ''} />
+          <meta property="og:type" content="website" />
+        </Helmet>
+        <Router>
+          <Routes>
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={
+              <PrivateRoute>
+                <AdminDashboard onSettingsUpdate={fetchStoreSettings} />
+              </PrivateRoute>
+            } />
 
-          <Route path="/service/:id" element={
-            <Layout banners={banners}> {/* Pass banners to Layout */}
-              <ServiceDetails />
-            </Layout>
-          } />
-          <Route path="/product/:id" element={
-            <Layout banners={banners}> {/* Pass banners to Layout */}
-              <ProductDetails />
-            </Layout>
-          } />
-          <Route path="/category/:categoryId" element={
-            <Layout banners={banners}> {/* Pass banners to Layout */}
-              <CategoryProducts />
-            </Layout>
-          } />
-          <Route path="/" element={
-            <Layout banners={banners}> {/* Pass banners to Layout */}
-              <StaggeredHome
-                storeSettings={storeSettings}
-                banners={banners}
-                setMainContentLoaded={setMainContentLoaded}
-              />
-            </Layout>
-          } />
-        </Routes>
-      </Router>
+            <Route path="/service/:id" element={
+              <Layout banners={banners}>
+                <ServiceDetails />
+              </Layout>
+            } />
+            <Route path="/product/:id" element={
+              <Layout banners={banners}>
+                <ProductDetails />
+              </Layout>
+            } />
+            <Route path="/category/:categoryId" element={
+              <Layout banners={banners}>
+                <CategoryProducts />
+              </Layout>
+            } />
+            <Route path="/" element={
+              <Layout banners={banners}>
+                <StaggeredHome
+                  storeSettings={storeSettings}
+                  banners={banners}
+                  setMainContentLoaded={setMainContentLoaded}
+                />
+              </Layout>
+            } />
+          </Routes>
+        </Router>
+      </CartProvider>
     </ThemeProvider>
   );
 }

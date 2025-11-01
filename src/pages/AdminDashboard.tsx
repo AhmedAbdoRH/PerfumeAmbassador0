@@ -56,6 +56,8 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
     sale_price: '',
     category_id: '',
     gallery: [] as string[],
+    is_featured: false,
+    is_best_seller: false,
   });
   const [newBanner, setNewBanner] = useState<Partial<Banner>>({
     type: 'text',
@@ -590,15 +592,39 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
       const serviceToAdd = {
         ...newService,
         category_id: selectedCategory,
-        sale_price: newService.sale_price || null
+        sale_price: newService.sale_price || null,
+        is_featured: newService.is_featured || false,
+        is_best_seller: newService.is_best_seller || false
       };
-      const { error } = await supabase.from('services').insert([serviceToAdd]);
+      
+      console.log('Adding service:', serviceToAdd); // Debug log
+      
+      const { data, error } = await supabase
+        .from('services')
+        .insert([serviceToAdd])
+        .select();
+        
       if (error) throw error;
+      
+      console.log('Service added successfully:', data); // Debug log
 
-      setNewService({ title: '', description: '', image_url: '', price: '', sale_price: '', category_id: '', gallery: [] });
-      setSelectedCategory('');
+      // Reset form
+      setNewService({ 
+        title: '', 
+        description: '', 
+        image_url: '', 
+        price: '', 
+        sale_price: '', 
+        category_id: '', 
+        gallery: [],
+        is_featured: false,
+        is_best_seller: false
+      });
+      setSelectedCategory(null);
       await fetchData();
+      setSuccessMsg('تمت إضافة المنتج بنجاح');
     } catch (err: any) {
+      console.error('Error adding service:', err); // Debug log
       setError(`خطأ في إضافة المنتج: ${err.message}`);
     } finally {
       setIsLoading(false);
@@ -615,6 +641,8 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
       sale_price: service.sale_price || '',
       category_id: service.category_id || '',
       gallery: Array.isArray(service.gallery) ? service.gallery : [],
+      is_featured: service.is_featured || false,
+      is_best_seller: service.is_best_seller || false
     });
     setSelectedCategory(service.category_id || '');
     const formElement = document.getElementById('service-form');
@@ -638,6 +666,8 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
         sale_price: newService.sale_price || null,
         category_id: selectedCategory,
         gallery: Array.isArray(newService.gallery) ? newService.gallery : [],
+        is_featured: newService.is_featured || false,
+        is_best_seller: newService.is_best_seller || false
       };
       const { error } = await supabase
         .from('services')
@@ -645,7 +675,17 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
         .eq('id', editingService);
       if (error) throw error;
 
-      setNewService({ title: '', description: '', image_url: '', price: '', sale_price: '', category_id: '', gallery: [] });
+      setNewService({ 
+        title: '', 
+        description: '', 
+        image_url: '', 
+        price: '', 
+        sale_price: '', 
+        category_id: '', 
+        gallery: [],
+        is_featured: false,
+        is_best_seller: false
+      });
       setSelectedCategory('');
       setEditingService(null);
       await fetchData();
@@ -658,7 +698,17 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
 
   const handleCancelEdit = () => {
     setEditingService(null);
-    setNewService({ title: '', description: '', image_url: '', price: '', sale_price: '', category_id: '', gallery: [] });
+    setNewService({ 
+      title: '', 
+      description: '', 
+      image_url: '', 
+      price: '', 
+      sale_price: '', 
+      category_id: '', 
+      gallery: [],
+      is_featured: false,
+      is_best_seller: false
+    });
     setSelectedCategory('');
     setError(null);
   };
@@ -1112,9 +1162,26 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
             )}
 
             {activeTab === 'testimonials' && (
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 px-8 py-6 bg-gradient-to-r from-yellow-400/20 via-yellow-100/10 to-yellow-400/10 border-b border-yellow-400/20 mb-8 rounded-2xl">
+                <div>
+                  <h2 className="text-2xl font-bold text-yellow-400 flex items-center gap-2">
+                    <List className="w-7 h-7 text-yellow-400" />
+                    إدارة آراء العملاء
+                  </h2>
+                  <p className="text-gray-200 mt-1 text-sm">إدارة وتعديل آراء وتقييمات العملاء</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="inline-flex items-center gap-1 bg-yellow-400/20 text-yellow-300 px-3 py-1 rounded-full text-xs font-bold">
+                    <List className="w-4 h-4" /> {testimonials.length} رأي
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'testimonials' && (
   <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/10">
     <div className="flex items-center justify-between mb-6">
-      <h2 className="text-2xl font-bold text-white">إدارة آراء العملاء</h2>
+      <h2 className="text-2xl font-bold text-white">إعدادات قسم آراء العملاء</h2>
       <div className="flex items-center gap-2">
         <label htmlFor="toggle-testimonials" className="text-white font-bold">إظهار قسم آراء العملاء</label>
         <input
@@ -1145,7 +1212,7 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
         />
       </div>
     </div>
-                <h2 className="text-2xl font-bold mb-6 text-white">  </h2>
+
                 <form
                   className="space-y-4 mb-8"
                   onSubmit={async (e: React.FormEvent<HTMLFormElement>) => {
@@ -1966,6 +2033,33 @@ export default function AdminDashboard({ onSettingsUpdate }: AdminDashboardProps
                               className={`w-full p-3 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#34C759] focus:border-transparent bg-black/20 backdrop-blur-sm border border-white/10 disabled:opacity-70 disabled:cursor-not-allowed`}
                               disabled={isLoading}
                             />
+                          </div>
+                        </div>
+                        {/* Latest Offers and Best Sellers Checkboxes */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="is_featured"
+                              checked={newService.is_featured || false}
+                              onChange={(e) => setNewService({ ...newService, is_featured: e.target.checked })}
+                              className="h-5 w-5 text-yellow-400 rounded focus:ring-yellow-400 border-gray-600 bg-gray-700"
+                            />
+                            <label htmlFor="is_featured" className="mr-2 text-sm font-medium text-white">
+                              أحدث العروض
+                            </label>
+                          </div>
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id="is_best_seller"
+                              checked={newService.is_best_seller || false}
+                              onChange={(e) => setNewService({ ...newService, is_best_seller: e.target.checked })}
+                              className="h-5 w-5 text-yellow-400 rounded focus:ring-yellow-400 border-gray-600 bg-gray-700"
+                            />
+                            <label htmlFor="is_best_seller" className="mr-2 text-sm font-medium text-white">
+                              الأكثر مبيعاً
+                            </label>
                           </div>
                         </div>
                         {/* رفع الصور الإضافية */}

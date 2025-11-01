@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Sparkles } from 'lucide-react';
+import { MessageCircle, Sparkles, ShoppingCart, Check } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
 
 interface ProductCardProps {
   title: string;
@@ -32,70 +33,101 @@ export default function ProductCard({ title, description, imageUrl, price, saleP
     window.open(`https://wa.me/201027381559?text=${encodeURIComponent(message)}`, '_blank');
   };
 
+  const { addToCart } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsAdding(true);
+    
+    // Add to cart
+    addToCart({
+      id,
+      title,
+      price: salePrice || price, // Use sale price if available
+      imageUrl,
+    });
+    
+    // Show added feedback
+    setIsAdded(true);
+    
+    // Reset button state after animation
+    setTimeout(() => {
+      setIsAdding(false);
+      setTimeout(() => setIsAdded(false), 2000);
+    }, 1000);
+  };
+
   return (
-    // Main container for the product card.
-    // Uses secondary color with transparency for background and border.
-    // Applies backdrop blur for a glassmorphism effect.
-    // Includes transition for hover effects (scale and background change).
     <div className="group relative bg-secondary/5 backdrop-blur-md rounded-xl border border-secondary/20 overflow-hidden transition-all duration-150 hover:scale-105 hover:bg-secondary/10">
-      {/* Link wraps the card content, navigating to the product details page */}
-      <Link to={`/product/${id}`}>
+      <Link to={`/product/${id}`} className="block">
         <div className="relative aspect-[4/3] w-full">
-          {/* Product image */}
           <img
             src={imageUrl}
             alt={title}
             className="absolute inset-0 w-full h-full object-cover"
           />
-          {/* Overlay gradient for hover effect */}
           <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
         </div>
-        {/* Card content area */}
         <div className="p-6">
-          {/* Product title with Sparkles icon */}
-          {/* Sparkles icon color is set using the light gold hex code */}
           <h3 className="text-xl font-bold mb-2 text-secondary flex items-center gap-2">
             {title}
-            {/* Apply light gold text color using arbitrary value syntax */}
             <Sparkles className={`h-4 w-4 text-[${lightGold}]`} />
           </h3>
-          {/* Product description - show only the first line */}
-          {/* Text color is secondary with 70% opacity */}
           <p className="text-secondary/70 mb-4">
             {description.split(/\r?\n/)[0]}
           </p>
-          {/* Price and Contact button container */}
-          <div className="flex justify-between items-center">
-            {/* Product price with sale price support */}
-            <div className="flex flex-col items-end">
-              {salePrice ? (
-                <>
-                  <span className={`font-bold text-lg text-[${lightGold}]`}>{salePrice} ج</span>
-                  <span className="text-sm text-gray-400 line-through">{price} ج</span>
-                </>
+        </div>
+      </Link>
+      
+      <div className="px-6 pb-6 pt-0">
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col items-end">
+            {salePrice ? (
+              <>
+                <span className={`font-bold text-lg text-[${lightGold}]`}>{salePrice} ج</span>
+                <span className="text-sm text-gray-400 line-through">{price} ج</span>
+              </>
+            ) : (
+              <span className={`font-bold text-lg text-[${lightGold}]`}>{price} ج</span>
+            )}
+          </div>
+          
+          <div className="flex gap-2">
+            {/* Add to Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdding || isAdded}
+              className={`flex items-center justify-center p-2 rounded-lg transition-all duration-300 ${
+                isAdded 
+                  ? 'bg-green-500 text-white' 
+                  : `bg-[${lightGold}]/90 hover:bg-[${lightGold}] text-secondary`
+              } ${isAdding ? 'opacity-75' : ''}`}
+              title={isAdded ? 'تمت الإضافة' : 'أضف إلى السلة'}
+            >
+              {isAdding ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : isAdded ? (
+                <Check className="h-5 w-5" />
               ) : (
-                <span className={`font-bold text-lg text-[${lightGold}]`}>{price} ج</span>
+                <ShoppingCart className="h-5 w-5" />
               )}
-            </div>
-            {/* "Contact Now" button */}
-            {/* Background color is light gold with 80% opacity using arbitrary value */}
-            {/* On hover, background changes to a slightly darker gold (yellow-500), matching Hero component */}
-            {/* Text color is secondary */}
-            {/* Includes MessageCircle icon and text */}
+            </button>
+            
+            {/* Contact Button */}
             <button
               onClick={handleContactClick}
-              // Apply light gold background with opacity using arbitrary value
-              // Use yellow-500 for hover, matching the Hero component's button hover
-              className={`bg-[${lightGold}]/100 hover:bg-yellow-500
-                          text-secondary
-                          px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2 backdrop-blur-sm`}
+              className={`bg-[${lightGold}]/90 hover:bg-yellow-500 text-secondary px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2 backdrop-blur-sm`}
             >
-              <MessageCircle className="h-5 w-5" /> {/* Message icon */}
-              اطلب الآن {/* Button text */}
+              <MessageCircle className="h-5 w-5" />
+              <span className="hidden sm:inline">اطلب الآن</span>
             </button>
           </div>
         </div>
-      </Link>
+      </div>
     </div>
   );
 }

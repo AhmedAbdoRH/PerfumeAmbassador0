@@ -210,24 +210,13 @@ const Cart: React.FC = () => {
                 </div>
                 <button
                   onClick={() => {
-                    // Navigate to checkout page
-                    window.location.href = '/checkout';
-                    // Close cart
-                    toggleCart(false);
-                  }}
-                  className="w-full bg-primary text-white py-3 rounded-md hover:bg-primary-dark transition-colors mb-2"
-                >
-                  إكمال الطلب
-                </button>
-                <button
-                  onClick={() => {
-                    // Handle WhatsApp checkout
+                    // Handle checkout
                     const message = cartItems
                       .map(item => `${item.title} - ${item.quantity} × ${item.price} ر.س`)
                       .join('\n');
                     window.open(
                       `https://wa.me/201027381559?text=${encodeURIComponent(
-                        `الطلبية:\n${message}\n\nالمجموع: ${cartTotal} ر.س`
+                        `الطلبية:\n${message}\n\nالمجموع: ${calculateTotal()} ر.س`
                       )}`,
                       '_blank'
                     );
@@ -236,7 +225,7 @@ const Cart: React.FC = () => {
                   }}
                   className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition-colors"
                 >
-                  طلب عبر واتساب
+                  إتمام الطلب
                 </button>
               </div>
             )}

@@ -28,7 +28,8 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
 
   return (
     <div
-      className={`relative w-full h-[200px] md:h-[350px] lg:h-[500px] flex items-center justify-center overflow-hidden rounded-none mt-24 fade-in-banner${fadeIn ? ' fade-in-active' : ''}`}
+      className={`relative w-full h-[200px] md:h-[350px] lg:h-[500px] flex items-center justify-center overflow-hidden rounded-none mt-32 md:mt-32 fade-in-banner${fadeIn ? ' fade-in-active' : ''}`}
+      style={{ marginTop: 'var(--header-height, 4.9rem)' }}
     >
       {/* تأثير Fade-in للبانر عند أول تحميل */}
       <style>{`

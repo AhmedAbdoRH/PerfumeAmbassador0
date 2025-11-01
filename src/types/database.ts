@@ -21,6 +21,8 @@ export interface Service {
   images_urls?: string[]; // روابط صور متعددة
   price: string | null;
   sale_price: string | null; // السعر المخفض
+  is_featured?: boolean; // أحدث العروض
+  is_best_seller?: boolean; // الأكثر مبيعاً
   created_at: string;
   category?: Category;
   // For search results display

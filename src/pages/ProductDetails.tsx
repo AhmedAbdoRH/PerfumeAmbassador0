@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Service } from '../types/database';
 import { MessageCircle } from 'lucide-react';
+import { useCart } from '../contexts/CartContext';
+import { toast } from 'react-toastify';
 
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T>();
@@ -26,15 +28,32 @@ export default function ProductDetails() {
   const [prevTransform, setPrevTransform] = useState('translateX(0)');
   const [prevImageIndexState, setPrevImageIndexState] = useState<number | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const { addToCart } = useCart();
+
+  // Scroll to top when product changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
+  // Scroll to top when product changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   // Fetch service and suggested products on ID change
   useEffect(() => {
     if (id) {
       fetchService(id);
-      fetchSuggested();
       setCurrentImageIndex(0); // Reset image index when product changes
     }
   }, [id]);
+
+  // Fetch suggested products when service data is loaded
+  useEffect(() => {
+    if (service) {
+      fetchSuggested();
+    }
+  }, [service]);
 
   const fetchService = async (serviceId: string) => {
     try {
@@ -59,11 +78,15 @@ export default function ProductDetails() {
   };
 
   const fetchSuggested = async () => {
+    if (!service) return;
+    
     const { data } = await supabase
       .from('services')
       .select('*')
-      .neq('id', id)
+      .eq('category_id', service.category_id) // Filter by the same category
+      .neq('id', id) // Exclude current product
       .limit(10);
+      
     setSuggested(data || []);
   };
 
@@ -167,7 +190,7 @@ export default function ProductDetails() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col pt-24" style={backgroundStyles}>
+    <div className="min-h-screen flex flex-col pt-24 relative" style={backgroundStyles}>
       <div className="flex items-center justify-center flex-grow py-8">
         <div className="container mx-auto px-4 max-w-4xl lg:max-w-5xl">
           <div className="rounded-lg shadow-lg overflow-hidden glass">
@@ -240,13 +263,33 @@ export default function ProductDetails() {
                       <span>{service.price} ج</span>
                     )}
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 items-center">
                     <button
                       onClick={handleContact}
                       className="flex-1 bg-[#25D366] text-white py-3 px-6 rounded-lg font-bold hover:bg-opacity-90 flex items-center justify-center gap-2"
                     >
                       <MessageCircle className="h-5 w-5" />
                       تواصل معنا للطلب
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        addToCart({
+                          id: service.id,
+                          title: service.title,
+                          price: service.sale_price || service.price,
+                          imageUrl: service.image_url || ''
+                        });
+                        toast.success('تمت إضافة المنتج إلى السلة');
+                      }}
+                      className="bg-[#FFD700] hover:bg-yellow-500 text-black p-3 rounded-lg font-bold flex items-center justify-center"
+                      title="أضف إلى السلة"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                      </svg>
                     </button>
                   </div>
                 </div>
