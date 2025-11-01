@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { supabase } from './lib/supabase';
-import { CartProvider } from './contexts/CartContext';
-import Cart from './components/Cart';
 import Header from './components/Header';
 import BannerSlider from './components/BannerSlider';
 import Services from './components/Services';
@@ -15,8 +13,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import ServiceDetails from './pages/ServiceDetails';
 import CategoryProducts from './pages/CategoryProducts';
 import ProductDetails from './pages/ProductDetails';
-import Checkout from './pages/Checkout';
-import OrderConfirmation from './pages/OrderConfirmation';
 import LoadingScreen from './components/LoadingScreen';
 import type { StoreSettings, Banner } from './types/database';
 import { ThemeProvider } from './theme/ThemeContext';
@@ -60,7 +56,7 @@ function App() {
   const [storeSettings, setStoreSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [banners, setBanners] = useState<Banner[]>([]);
-  const [mainContentLoaded, setMainContentLoaded] = useState(false);
+  const [mainContentLoaded, setMainContentLoaded] = useState(false); // New state
 
   useEffect(() => {
     let isMounted = true;
@@ -180,69 +176,57 @@ function App() {
 
   return (
     <ThemeProvider>
-      <CartProvider>
-        <Helmet>
-          <title>{storeSettings?.meta_title || storeSettings?.store_name || 'متجر إلكتروني'}</title>
-          <meta name="description" content={storeSettings?.meta_description || storeSettings?.store_description || 'أفضل المنتجات والعروض'} />
-          {storeSettings?.keywords && storeSettings.keywords.length > 0 && (
-            <meta name="keywords" content={storeSettings.keywords.join(', ')} />
-          )}
-          {storeSettings?.favicon_url && (
-            <link rel="icon" href={storeSettings.favicon_url} />
-          )}
-          {storeSettings?.og_image_url && (
-            <meta property="og:image" content={storeSettings.og_image_url} />
-          )}
-          <meta property="og:title" content={storeSettings?.meta_title || storeSettings?.store_name || ''} />
-          <meta property="og:description" content={storeSettings?.meta_description || storeSettings?.store_description || ''} />
-          <meta property="og:type" content="website" />
-        </Helmet>
-        <Router>
-          <Routes>
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={
-              <PrivateRoute>
-                <AdminDashboard onSettingsUpdate={fetchStoreSettings} />
-              </PrivateRoute>
-            } />
+      <Helmet>
+        <title>{storeSettings?.meta_title || storeSettings?.store_name || 'متجر إلكتروني'}</title>
+        <meta name="description" content={storeSettings?.meta_description || storeSettings?.store_description || 'أفضل المنتجات والعروض'} />
+        {storeSettings?.keywords && storeSettings.keywords.length > 0 && (
+          <meta name="keywords" content={storeSettings.keywords.join(', ')} />
+        )}
+        {storeSettings?.favicon_url && (
+          <link rel="icon" href={storeSettings.favicon_url} />
+        )}
+        {storeSettings?.og_image_url && (
+          <meta property="og:image" content={storeSettings.og_image_url} />
+        )}
+        <meta property="og:title" content={storeSettings?.meta_title || storeSettings?.store_name || ''} />
+        <meta property="og:description" content={storeSettings?.meta_description || storeSettings?.store_description || ''} />
+        <meta property="og:type" content="website" />
+      </Helmet>
+      <Router>
+        <Routes>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={
+            <PrivateRoute>
+              <AdminDashboard onSettingsUpdate={fetchStoreSettings} />
+            </PrivateRoute>
+          } />
 
-            <Route path="/service/:id" element={
-              <Layout banners={banners}>
-                <ServiceDetails />
-              </Layout>
-            } />
-            <Route path="/product/:id" element={
-              <Layout banners={banners}>
-                <ProductDetails />
-              </Layout>
-            } />
-            <Route path="/category/:categoryId" element={
-              <Layout banners={banners}>
-                <CategoryProducts />
-              </Layout>
-            } />
-            <Route path="/checkout" element={
-              <Layout banners={banners}>
-                <Checkout />
-              </Layout>
-            } />
-            <Route path="/order-confirmation/:orderId" element={
-              <Layout banners={banners}>
-                <OrderConfirmation />
-              </Layout>
-            } />
-            <Route path="/" element={
-              <Layout banners={banners}>
-                <StaggeredHome
-                  storeSettings={storeSettings}
-                  banners={banners}
-                  setMainContentLoaded={setMainContentLoaded}
-                />
-              </Layout>
-            } />
-          </Routes>
-        </Router>
-      </CartProvider>
+          <Route path="/service/:id" element={
+            <Layout banners={banners}> {/* Pass banners to Layout */}
+              <ServiceDetails />
+            </Layout>
+          } />
+          <Route path="/product/:id" element={
+            <Layout banners={banners}> {/* Pass banners to Layout */}
+              <ProductDetails />
+            </Layout>
+          } />
+          <Route path="/category/:categoryId" element={
+            <Layout banners={banners}> {/* Pass banners to Layout */}
+              <CategoryProducts />
+            </Layout>
+          } />
+          <Route path="/" element={
+            <Layout banners={banners}> {/* Pass banners to Layout */}
+              <StaggeredHome
+                storeSettings={storeSettings}
+                banners={banners}
+                setMainContentLoaded={setMainContentLoaded}
+              />
+            </Layout>
+          } />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }
@@ -274,22 +258,6 @@ function MainFade({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 50); // Quick fade-in for content
     return () => clearTimeout(t);
-  }, []);
-  useEffect(() => {
-    // Supabase connection test
-    const testSupabaseConnection = async () => {
-      try {
-        const { data, error } = await supabase.from('store_settings').select('id').limit(1);
-        if (error) {
-          console.error('Supabase connection test failed:', error.message);
-        } else if (data) {
-          console.log('Supabase connection test successful!', data);
-        }
-      } catch (err) {
-        console.error('Supabase connection test threw an exception:', err);
-      }
-    };
-    testSupabaseConnection();
   }, []);
   return (
     <div

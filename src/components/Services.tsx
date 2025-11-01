@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import ServiceCard from './ServiceCard';
 import { supabase } from '../lib/supabase';
 import type { Service, Category } from '../types/database';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
 
 const lightGold = '#FFD700';
 const brownDark = '#3d2c1d';
@@ -12,11 +11,9 @@ const accentColor = '#d99323';
 export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | 'featured' | 'best_sellers' | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [hasFeaturedProducts, setHasFeaturedProducts] = useState(false);
-  const [hasBestSellerProducts, setHasBestSellerProducts] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -37,12 +34,11 @@ export default function Services() {
     }
   };
 
-  const fetchServices = useCallback(async () => {
+  const fetchServices = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // Fetch all services with their categories
       const { data, error } = await supabase
         .from('services')
         .select(`
@@ -53,33 +49,16 @@ export default function Services() {
 
       if (error) throw error;
       setServices(data || []);
-
-      // Check if we have any featured or best seller products
-      const hasFeatured = data?.some(service => service.is_featured) || false;
-      const hasBestSellers = data?.some(service => service.is_best_seller) || false;
-      
-      setHasFeaturedProducts(hasFeatured);
-      setHasBestSellerProducts(hasBestSellers);
     } catch (err: any) {
       setError(err.message);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
-  const filteredServices = useCallback((): Service[] => {
-    if (!selectedCategory) return services;
-    
-    if (selectedCategory === 'featured') {
-      return services.filter(service => service.is_featured === true);
-    }
-    
-    if (selectedCategory === 'best_sellers') {
-      return services.filter(service => service.is_best_seller === true);
-    }
-    
-    return services.filter(service => service.category_id === selectedCategory);
-  }, [selectedCategory, services]);
+  const filteredServices = selectedCategory
+    ? services.filter(service => service.category_id === selectedCategory)
+    : services;
 
   if (isLoading) {
     return (
@@ -122,15 +101,23 @@ export default function Services() {
         >
           منتجاتنا
         </motion.h2>
-        {/* Special Categories */}
+        {/* الفاصل */}
         <motion.div
-          className="flex flex-wrap gap-4 justify-center mb-6"
+          className={`w-full h-1 bg-[${lightGold}] mb-0`}
+          variants={{
+            hidden: { opacity: 0, scaleX: 0 },
+            visible: { opacity: 1, scaleX: 1, transition: { duration: 0.8, ease: 'easeInOut' } },
+          }}
+        />
+
+        {/* الفئات */}
+        <motion.div
+          className="flex flex-wrap gap-4 justify-center mb-12"
           variants={{
             hidden: { opacity: 0 },
             visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
           }}
         >
-          {/* All Products Button */}
           <motion.button
             onClick={() => setSelectedCategory(null)}
             className={`p-4 rounded-xl transition-all duration-300 ${
@@ -146,55 +133,6 @@ export default function Services() {
             جميع العطور
           </motion.button>
 
-          {/* Featured Products Category */}
-          {hasFeaturedProducts && (
-            <motion.button
-              onClick={() => setSelectedCategory('featured')}
-              className={`p-4 rounded-xl transition-all duration-300 ${
-                selectedCategory === 'featured'
-                  ? `bg-[var(--color-secondary,#FFD700)] text-black font-bold shadow-md`
-                  : 'bg-yellow-500/20 text-yellow-300 hover:bg-yellow-500/30 hover:shadow-md'
-              }`}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 },
-              }}
-            >
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <span className="text-yellow-400">✨</span> أحدث العروض
-              </h3>
-            </motion.button>
-          )}
-
-          {/* Best Sellers Category */}
-          {hasBestSellerProducts && (
-            <motion.button
-              onClick={() => setSelectedCategory('best_sellers')}
-              className={`p-4 rounded-xl transition-all duration-300 ${
-                selectedCategory === 'best_sellers'
-                  ? `bg-[var(--color-secondary,#FF6B6B)] text-black font-bold shadow-md`
-                  : 'bg-red-500/20 text-red-300 hover:bg-red-500/30 hover:shadow-md'
-              }`}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0 },
-              }}
-            >
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <span className="text-red-400">🔥</span> الأكثر مبيعاً
-              </h3>
-            </motion.button>
-          )}
-        </motion.div>
-
-        {/* Regular Categories */}
-        <motion.div
-          className="flex flex-wrap gap-4 justify-center mb-12"
-          variants={{
-            hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-          }}
-        >
           <AnimatePresence>
             {categories.map((category) => (
               <motion.button
@@ -205,31 +143,31 @@ export default function Services() {
                     ? `bg-[var(--color-secondary,#34C759)] text-black font-bold shadow-md`
                     : 'bg-black/20 text-white hover:bg-black/30 hover:shadow-md'
                 }`}
-                variants={{
+                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   visible: { opacity: 1, y: 0 },
                 }}
               >
-                <h3 className="text-lg font-semibold">{category.name}</h3>
+           <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
               </motion.button>
             ))}
           </AnimatePresence>
         </motion.div>
 
-        {/* Products Grid */}
+        {/* منتجاتنا */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          variants={{
+           variants={{
             hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+            visible: { opacity: 1, transition: { staggerChildren: 0.3 } },
           }}
         >
           <AnimatePresence mode="wait">
-            {filteredServices().length > 0 ? (
-              filteredServices().map((service) => (
+            {filteredServices.length > 0 ? (
+              filteredServices.map((service) => (
                 <motion.div
                   key={service.id}
-                  variants={{
+                   variants={{
                     hidden: { opacity: 0, y: 20 },
                     visible: { opacity: 1, y: 0 },
                     exit: { opacity: 0, y: -20 }
