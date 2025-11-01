@@ -467,8 +467,9 @@ export default function Header({ storeSettings }: HeaderProps) {
                           <button 
                             onClick={(e) => {
                               e.stopPropagation();
-                              sendOrderViaWhatsApp();
+                              navigate('/checkout');
                               setIsCartHovered(false);
+                              toggleCart(false);
                             }}
                             className="w-full bg-[#FFD700] hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2"
                           >

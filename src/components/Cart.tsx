@@ -210,7 +210,18 @@ const Cart: React.FC = () => {
                 </div>
                 <button
                   onClick={() => {
-                    // Handle checkout
+                    // Navigate to checkout page
+                    window.location.href = '/checkout';
+                    // Close cart
+                    toggleCart(false);
+                  }}
+                  className="w-full bg-primary text-white py-3 rounded-md hover:bg-primary-dark transition-colors mb-2"
+                >
+                  إكمال الطلب
+                </button>
+                <button
+                  onClick={() => {
+                    // Handle WhatsApp checkout
                     const message = cartItems
                       .map(item => `${item.title} - ${item.quantity} × ${item.price} ر.س`)
                       .join('\n');
@@ -225,7 +236,7 @@ const Cart: React.FC = () => {
                   }}
                   className="w-full bg-green-600 text-white py-3 rounded-md hover:bg-green-700 transition-colors"
                 >
-                  إتمام الطلب
+                  طلب عبر واتساب
                 </button>
               </div>
             )}

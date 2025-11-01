@@ -15,6 +15,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import ServiceDetails from './pages/ServiceDetails';
 import CategoryProducts from './pages/CategoryProducts';
 import ProductDetails from './pages/ProductDetails';
+import Checkout from './pages/Checkout';
+import OrderConfirmation from './pages/OrderConfirmation';
 import LoadingScreen from './components/LoadingScreen';
 import type { StoreSettings, Banner } from './types/database';
 import { ThemeProvider } from './theme/ThemeContext';
@@ -219,6 +221,16 @@ function App() {
                 <CategoryProducts />
               </Layout>
             } />
+            <Route path="/checkout" element={
+              <Layout banners={banners}>
+                <Checkout />
+              </Layout>
+            } />
+            <Route path="/order-confirmation/:orderId" element={
+              <Layout banners={banners}>
+                <OrderConfirmation />
+              </Layout>
+            } />
             <Route path="/" element={
               <Layout banners={banners}>
                 <StaggeredHome
@@ -262,6 +274,22 @@ function MainFade({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 50); // Quick fade-in for content
     return () => clearTimeout(t);
+  }, []);
+  useEffect(() => {
+    // Supabase connection test
+    const testSupabaseConnection = async () => {
+      try {
+        const { data, error } = await supabase.from('store_settings').select('id').limit(1);
+        if (error) {
+          console.error('Supabase connection test failed:', error.message);
+        } else if (data) {
+          console.log('Supabase connection test successful!', data);
+        }
+      } catch (err) {
+        console.error('Supabase connection test threw an exception:', err);
+      }
+    };
+    testSupabaseConnection();
   }, []);
   return (
     <div
