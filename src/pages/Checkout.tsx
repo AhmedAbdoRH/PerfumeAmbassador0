@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Truck, CreditCard, CheckCircle, AlertCircle, User, Phone, MapPin, FileText } from 'lucide-react';
 
 const Checkout: React.FC = () => {
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, cartTotal, subtotal, shippingFee, clearCart } = useCart();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
@@ -132,12 +132,6 @@ const Checkout: React.FC = () => {
       setLoading(false);
     }
   };
-
-  const calculateSubtotal = () => {
-    return cartItems.reduce((sum, item) => sum + (item.numericPrice * item.quantity), 0);
-  };
-
-  const subtotal = calculateSubtotal();
 
   const containerVariants = {
     hidden: { opacity: 0 },
