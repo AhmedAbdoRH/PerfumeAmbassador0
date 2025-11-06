@@ -3,16 +3,12 @@
   command = "npm run build"
   publish = "dist"
 
-# Prerender.io integration with token-based authentication
-[[redirects]]
-  from = "/*"
-  to = "https://service.prerender.io/https://perfume-ambassador.com/:splat"
-  status = 200
-  force = false
-  headers = {X-Prerender-Token = "V85u5WS8kbxdXKCF5KuR"}
-  conditions = {User-Agent = ["Googlebot", "Bingbot", "Yandex", "DuckDuckBot", "Baiduspider", "facebookexternalhit", "twitterbot", "rogerbot", "linkedinbot", "embedly", "quora link preview", "showyoubot", "outbrain", "pinterest", "slackbot", "vkShare", "W3C_Validator"]}
+# Edge Function for Prerender.io integration
+[edge_functions]
+  # Directory where edge functions are stored
+  path = "netlify/edge-functions"
 
-# SPA routing - fallback for regular users
+# SPA routing - fallback for all non-edge-handled routes
 [[redirects]]
   from = "/*"
   to = "/index.html"
